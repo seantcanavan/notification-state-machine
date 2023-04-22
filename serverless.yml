@@ -1,0 +1,23 @@
+org: f72e1c13062e4f45ad951530acf9e5a7
+app: notification-step-machine
+service: notification-step-machine
+
+configValidationMode: error
+frameworkVersion: ">=3"
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: go1.x
+  memorySize: 256 # optional, in MB, default is 1024
+  environment:
+    APP_NAME: ${param:APP_NAME}
+    CONNECTION_STRING_METADATA: ${param:CONNECTION_STRING_METADATA}
+    CONNECTION_STRING_TTL: ${param:CONNECTION_STRING_TTL}
+    LAMBDA_JWT_ROUTER_CORS_HEADERS: ${param:LAMBDA_JWT_ROUTER_CORS_HEADERS}
+    LAMBDA_JWT_ROUTER_CORS_METHODS: ${param:LAMBDA_JWT_ROUTER_CORS_METHODS}
+    LAMBDA_JWT_ROUTER_CORS_ORIGIN: ${param:LAMBDA_JWT_ROUTER_CORS_ORIGIN}
+    LAMBDA_JWT_ROUTER_HMAC_SECRET: ${param:LAMBDA_JWT_ROUTER_HMAC_SECRET}
+    REGION_AWS: ${param:REGION_AWS}
+    STAGE: ${param:STAGE}
