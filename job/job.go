@@ -3,7 +3,6 @@ package job
 import (
 	"context"
 	"fmt"
-	"github.com/seantcanavan/lambda_jwt_router/lambda_util"
 	"github.com/seantcanavan/notification-step-machine/enum"
 	"github.com/seantcanavan/notification-step-machine/metadata"
 	"github.com/seantcanavan/notification-step-machine/util"
@@ -12,6 +11,7 @@ import (
 )
 
 type CreateReq struct {
+	ExpiresAt time.Time
 	From      string
 	Template  string
 	To        string
@@ -48,11 +48,11 @@ func Get(ctx context.Context, id string) (*Job, int, error) {
 }
 
 func GenerateRandom() *CreateReq {
- 	return &CreateReq{
+	return &CreateReq{
 		From:      util.GenerateRandomString(15),
 		Template:  util.GenerateRandomString(15),
 		To:        util.GenerateRandomEmail(),
 		Type:      enum.Email,
-		Variables:
+		Variables: metadata.GenerateRandomEmailVariables(),
 	}
 }
