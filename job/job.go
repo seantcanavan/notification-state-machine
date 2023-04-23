@@ -9,6 +9,7 @@ import (
 	"github.com/seantcanavan/notification-step-machine/database_job"
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/enum"
+	"github.com/seantcanavan/notification-step-machine/job/audit"
 	"github.com/seantcanavan/notification-step-machine/metadata"
 	"github.com/seantcanavan/notification-step-machine/util"
 	"net/http"
@@ -70,15 +71,20 @@ func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
 
 	_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
 		ConditionExpression: aws.String("attribute_not_exists(id)"),
-		//ExpressionAttributeNames:    nil,
-		//ExpressionAttributeValues:   nil,
-		Item:      marshalled,
-		TableName: database_job.TableName,
+		Item:                marshalled,
+		TableName:           database_job.TableName,
 	})
 
 	if err != nil {
 		return nil, util.DecodeAWSErr(err), err
 	}
+
+	audit.CreateSilent(ctx, &audit.CreateReq{
+		JobID:          job.ID,
+		NextStatus:     enum.Queued,
+		Operation:      enum.Create,
+		PreviousStatus: enum.Created,
+	})
 
 	return job, http.StatusOK, nil
 }
