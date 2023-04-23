@@ -33,8 +33,8 @@ provider:
             - dynamodb:Scan
             - dynamodb:UpdateItem
           Resource:
-          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}"
-          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}/index/*"
+          - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}
+          - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}/index/*
         - Effect: Allow
           Action:
             - dynamodb:DeleteItem
@@ -44,8 +44,8 @@ provider:
             - dynamodb:Scan
             - dynamodb:UpdateItem
           Resource:
-          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}"
-          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}/index/*"
+          - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}
+          - arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}/index/*
 
 functions:
   api:
@@ -72,6 +72,8 @@ resources: # CloudFormation template syntax from here on.
             AttributeType: S
           - AttributeName: gsi1-rk1
             AttributeType: S
+          - AttributeName: gsi2
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
@@ -82,6 +84,15 @@ resources: # CloudFormation template syntax from here on.
                 KeyType: HASH
               - AttributeName: gsi1-rk1
                 KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: gsi2
+            KeySchema:
+              - AttributeName: gsi2
+                KeyType: HASH
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
