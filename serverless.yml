@@ -58,19 +58,19 @@ functions:
           method: any
           path: /{proxy+}
           cors: true
-  thaw:
-    timeout: 30
-    handler: bin/thaw
-    package:
-      artifact: bin/thaw.zip
-    events:
-      - stream:
-          arn: arn:aws:dynamodb:us-east-2:205503630745:table/notification-step-machine-jobsTTL3-staging
-          type: dynamodb
-          batchSize: 10
-          enabled: true
-          filterPatterns:
-            - eventName: [ REMOVE ]
+#  thaw:
+#    timeout: 30
+#    handler: bin/thaw
+#    package:
+#      artifact: bin/thaw.zip
+#    events:
+#      - stream:
+#          arn: arn:aws:dynamodb:us-east-2:205503630745:table/notification-step-machine-jobsTTL3-staging
+#          type: dynamodb
+#          batchSize: 10
+#          enabled: true
+#          filterPatterns:
+#            - eventName: [ REMOVE ]
 
 resources: # CloudFormation template syntax from here on.
   Resources:
@@ -114,8 +114,6 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        StreamSpecification:
-          StreamViewType: NEW_IMAGE
     jobsTTLTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -132,6 +130,8 @@ resources: # CloudFormation template syntax from here on.
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
 
 constructs:
   async:
