@@ -26,22 +26,26 @@ provider:
       statements:
         - Effect: Allow
           Action:
-            - dynamodb:Query
-            - dynamodb:Scan
+            - dynamodb:DeleteItem
             - dynamodb:GetItem
             - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
             - dynamodb:UpdateItem
-            - dynamodb:DeleteItem
-          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}"
+          Resource:
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}"
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}/index/*"
         - Effect: Allow
           Action:
-            - dynamodb:Query
-            - dynamodb:Scan
+            - dynamodb:DeleteItem
             - dynamodb:GetItem
             - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
             - dynamodb:UpdateItem
-            - dynamodb:DeleteItem
-          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}"
+          Resource:
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}"
+          - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}/index/*"
 
 functions:
   api:
