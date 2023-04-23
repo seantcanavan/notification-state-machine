@@ -58,19 +58,19 @@ functions:
           method: any
           path: /{proxy+}
           cors: true
-  thaw:
-    timeout: 30
-    handler: bin/thaw
-    package:
-      artifact: bin/thaw.zip
-    events:
-      - stream:
-          arn: arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}
-          type: dynamodb
-          batchSize: 10
-          enabled: true
-          filterPatterns:
-            - eventName: [ REMOVE ]
+#  thaw:
+#    timeout: 30
+#    handler: bin/thaw
+#    package:
+#      artifact: bin/thaw.zip
+#    events:
+#      - stream:
+#          arn: arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}
+#          type: dynamodb
+#          batchSize: 10
+#          enabled: true
+#          filterPatterns:
+#            - eventName: [ REMOVE ]
 
 resources: # CloudFormation template syntax from here on.
   Resources:
@@ -114,6 +114,9 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
+          StreamEnabled: true
     jobsTTLTable:
       Type: AWS::DynamoDB::Table
       Properties:
