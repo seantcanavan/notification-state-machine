@@ -19,9 +19,9 @@ func Connect() {
 
 	// use staging for now in dev for simplicity's sake
 	if stage == "development" {
-		TableName = aws.String(os.Getenv("APP_NAME") + "-" + "jobsTTL" + "-" + "staging")
+		TableName = aws.String(os.Getenv("APP_NAME") + "-" + "jobsTTL2" + "-" + "staging")
 	} else {
-		TableName = aws.String(os.Getenv("APP_NAME") + "-" + "jobsTTL" + "-" + os.Getenv("STAGE"))
+		TableName = aws.String(os.Getenv("APP_NAME") + "-" + "jobsTTL2" + "-" + os.Getenv("STAGE"))
 	}
 
 	mySession := session.Must(session.NewSession())

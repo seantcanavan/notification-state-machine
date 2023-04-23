@@ -16,12 +16,16 @@ import (
 )
 
 type CreateReq struct {
-	ExpiresAt *time.Time             `json:"expiresAt,omitempty"`
-	From      string                 `json:"from,omitempty"`
-	Template  string                 `json:"template,omitempty"`
-	To        string                 `json:"to,omitempty"`
-	Type      enum.Type              `json:"type,omitempty"`
-	Variables map[string]interface{} `json:"variables,omitempty"`
+	Created   *time.Time             `json:"created,omitempty" dynamodbav:"created,omitempty"`
+	ExpiresAt *time.Time             `json:"expiresAt,omitempty" dynamodbav:"expiresAt,omitempty"`
+	From      string                 `json:"from,omitempty" dynamodbav:"from,omitempty"`
+	ID        *string                `json:"id,omitempty" dynamodbav:"id,omitempty"`
+	Template  string                 `json:"template,omitempty" dynamodbav:"template,omitempty"`
+	To        string                 `json:"to,omitempty" dynamodbav:"to,omitempty"`
+	Type      enum.Type              `json:"type,omitempty" dynamodbav:"type,omitempty"`
+	Updated   *time.Time             `json:"updated,omitempty" dynamodbav:"updated,omitempty"`
+	Variables map[string]interface{} `json:"variables,omitempty" dynamodbav:"variables,omitempty"`
+	ttl       int64                  `json:"-" dynamodbav:"ttl,omitempty"`
 }
 
 type Job struct {
@@ -64,31 +68,56 @@ func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
 		return nil, http.StatusInternalServerError, marshalErr
 	}
 
-	fmt.Println(fmt.Sprintf("cReq.ExpiresAt is [%+v]", *cReq.ExpiresAt))
-
-	if cReq.ExpiresAt != nil {
-		_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
-			ConditionExpression: aws.String("attribute_not_exists(id)"),
-			//ExpressionAttributeNames:    nil,
-			//ExpressionAttributeValues:   nil,
-			Item:      marshalled,
-			TableName: database_ttl.TableName,
-		})
-	} else {
-		_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
-			ConditionExpression: aws.String("attribute_not_exists(id)"),
-			//ExpressionAttributeNames:    nil,
-			//ExpressionAttributeValues:   nil,
-			Item:      marshalled,
-			TableName: database_job.TableName,
-		})
-	}
+	_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
+		ConditionExpression: aws.String("attribute_not_exists(id)"),
+		//ExpressionAttributeNames:    nil,
+		//ExpressionAttributeValues:   nil,
+		Item:      marshalled,
+		TableName: database_job.TableName,
+	})
 
 	if err != nil {
 		return nil, util.DecodeAWSErr(err), err
 	}
 
 	return job, http.StatusOK, nil
+}
+
+func Freeze(ctx context.Context, cReq *CreateReq) (*CreateReq, int, error) {
+	cReq, httpStatus, err := validateCreateReq(cReq)
+	if err != nil {
+		return nil, httpStatus, err
+	}
+
+	now := time.Now()
+
+	if cReq.ExpiresAt.Before(now) {
+		return nil, http.StatusBadRequest, fmt.Errorf("cannot expire [%+v] before now [%+v]", cReq.ExpiresAt, now)
+	}
+
+	cReq.Created = &now
+	cReq.ID = aws.String(util.NewUUID())
+	cReq.Updated = &now
+	cReq.ttl = cReq.ExpiresAt.Unix()
+
+	marshalled, marshalErr := dynamodbattribute.MarshalMap(cReq)
+	if marshalErr != nil {
+		return nil, http.StatusInternalServerError, marshalErr
+	}
+
+	_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
+		ConditionExpression: aws.String("attribute_not_exists(id)"),
+		//ExpressionAttributeNames:    nil,
+		//ExpressionAttributeValues:   nil,
+		Item:      marshalled,
+		TableName: database_ttl.TableName,
+	})
+
+	if err != nil {
+		return nil, util.DecodeAWSErr(err), err
+	}
+
+	return cReq, http.StatusOK, nil
 }
 
 func Get(ctx context.Context, id string) (*Job, int, error) {

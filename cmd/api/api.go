@@ -29,6 +29,7 @@ func init() {
 	// Notifications endpoints
 	router.Route("GET", "/notifications/:id", job.GetLambda, lambda_jwt.DecodeStandard)
 	router.Route("POST", "/notifications", job.CreateLambda, lambda_jwt.DecodeStandard)
+	router.Route("POST", "/notifications/freeze", job.FreezeLambda, lambda_jwt.DecodeStandard)
 
 	// Audit endpoints
 	router.Route("GET", "/audit/:jobId", audit.GetLambda, lambda_jwt.DecodeStandard)

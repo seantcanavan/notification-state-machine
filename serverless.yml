@@ -13,7 +13,7 @@ provider:
   memorySize: 128 # optional, in MB, default is 1024
   environment:
     APP_NAME: ${param:APP_NAME}
-    DYNAMODB_JOBS_TTL_TABLE_NAME: ${self:service}-jobsTTL-${opt:stage, self:provider.stage}
+    DYNAMODB_JOBS_TTL_TABLE_NAME: ${self:service}-jobsTTL2-${opt:stage, self:provider.stage}
     DYNAMODB_JOBS_TABLE_NAME: ${self:service}-jobs-${opt:stage, self:provider.stage}
     LAMBDA_JWT_ROUTER_CORS_HEADERS: ${param:LAMBDA_JWT_ROUTER_CORS_HEADERS}
     LAMBDA_JWT_ROUTER_CORS_METHODS: ${param:LAMBDA_JWT_ROUTER_CORS_METHODS}
@@ -89,7 +89,7 @@ resources: # CloudFormation template syntax from here on.
     jobsTTLTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-jobsTTL-${opt:stage, self:provider.stage}
+        TableName: ${self:service}-jobsTTL2-${opt:stage, self:provider.stage}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -100,7 +100,7 @@ resources: # CloudFormation template syntax from here on.
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TimeToLiveSpecification:
-          AttributeName: expiresAt
+          AttributeName: ttl
           Enabled: true
 
 constructs:
