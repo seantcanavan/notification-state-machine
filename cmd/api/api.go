@@ -35,8 +35,6 @@ func init() {
 
 	// Security endpoints
 	router.Route("POST", "/login", security.LoginLambda)
-	//router.Route("POST", "security/login", security.LoginLambda)
-
 }
 
 func main() {

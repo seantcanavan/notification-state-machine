@@ -7,7 +7,7 @@ import (
 )
 
 func GetLambda(ctx context.Context, lambdaReq events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	job, httpStatus, err := Get(ctx, lambdaReq.PathParameters["id"])
+	job, httpStatus, err := Get(ctx, lambdaReq.PathParameters["jobId"])
 	if err != nil {
 		return lambda_router.StatusAndErrorRes(httpStatus, err)
 	}

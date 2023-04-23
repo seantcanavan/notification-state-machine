@@ -13,12 +13,12 @@ import (
 )
 
 type CreateReq struct {
-	ExpiresAt time.Time
-	From      string
-	Template  string
-	To        string
-	Type      enum.Type
-	Variables map[string]interface{}
+	ExpiresAt time.Time              `json:"expiresAt,omitempty"`
+	From      string                 `json:"from,omitempty"`
+	Template  string                 `json:"template,omitempty"`
+	To        string                 `json:"to,omitempty"`
+	Type      enum.Type              `json:"type,omitempty"`
+	Variables map[string]interface{} `json:"variables,omitempty"`
 }
 
 type Job struct {
@@ -37,6 +37,7 @@ type Job struct {
 }
 
 func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
+
 	cReq, httpStatus, err := validateCreateReq(cReq)
 	if err != nil {
 		return nil, httpStatus, err

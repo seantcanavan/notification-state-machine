@@ -1,7 +1,6 @@
 package security
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/seantcanavan/lambda_jwt_router/lambda_jwt"
 	"net/http"
@@ -34,7 +33,6 @@ func Login(lReq *LoginReq) (*LoginRes, int, error) {
 		Subject:   lReq.ID,
 	})
 
-	fmt.Println(fmt.Sprintf("about to sign [%+v]", extendedClaims))
 	userJWT, err := lambda_jwt.Sign(extendedClaims)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
