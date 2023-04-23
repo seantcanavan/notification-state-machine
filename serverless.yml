@@ -10,21 +10,21 @@ package:
 provider:
   name: aws
   runtime: go1.x
-  memorySize: 256 # optional, in MB, default is 1024
+  memorySize: 128 # optional, in MB, default is 1024
   environment:
-#    APP_NAME: ${param:APP_NAME}
-#    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-#    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-#    CONNECTION_STRING_METADATA: ${param:CONNECTION_STRING_METADATA}
-#    CONNECTION_STRING_TTL: ${param:CONNECTION_STRING_TTL}
-#    DYNAMODB_JOBS_TTL_TABLE_NAME: ${self:service}-${opt:stage, self:provider.stage}
-#    DYNAMODB_JOBS_TABLE_NAME: ${self:service}-${opt:stage, self:provider.stage}
-#    LAMBDA_JWT_ROUTER_CORS_HEADERS: ${param:LAMBDA_JWT_ROUTER_CORS_HEADERS}
-#    LAMBDA_JWT_ROUTER_CORS_METHODS: ${param:LAMBDA_JWT_ROUTER_CORS_METHODS}
-#    LAMBDA_JWT_ROUTER_CORS_ORIGIN: ${param:LAMBDA_JWT_ROUTER_CORS_ORIGIN}
-#    LAMBDA_JWT_ROUTER_HMAC_SECRET: ${param:LAMBDA_JWT_ROUTER_HMAC_SECRET}
-#    REGION_AWS: ${param:REGION_AWS}
-#    STAGE: ${param:STAGE}
+    APP_NAME: ${param:APP_NAME}
+    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    CONNECTION_STRING_METADATA: ${param:CONNECTION_STRING_METADATA}
+    CONNECTION_STRING_TTL: ${param:CONNECTION_STRING_TTL}
+    DYNAMODB_JOBS_TTL_TABLE_NAME: ${self:service}-jobsTTL-${opt:stage, self:provider.stage}
+    DYNAMODB_JOBS_TABLE_NAME: ${self:service}-jobs-${opt:stage, self:provider.stage}
+    LAMBDA_JWT_ROUTER_CORS_HEADERS: ${param:LAMBDA_JWT_ROUTER_CORS_HEADERS}
+    LAMBDA_JWT_ROUTER_CORS_METHODS: ${param:LAMBDA_JWT_ROUTER_CORS_METHODS}
+    LAMBDA_JWT_ROUTER_CORS_ORIGIN: ${param:LAMBDA_JWT_ROUTER_CORS_ORIGIN}
+    LAMBDA_JWT_ROUTER_HMAC_SECRET: ${param:LAMBDA_JWT_ROUTER_HMAC_SECRET}
+    REGION_AWS: ${param:REGION_AWS}
+    STAGE: ${param:STAGE}
   iam:
     role:
       statements:
@@ -64,7 +64,7 @@ resources: # CloudFormation template syntax from here on.
     jobsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: jobsTable
+        TableName: ${self:service}-jobs-${opt:stage, self:provider.stage}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -85,7 +85,7 @@ resources: # CloudFormation template syntax from here on.
     jobsTTLTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: jobsTTLTable
+        TableName: ${self:service}-jobsTTL-${opt:stage, self:provider.stage}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -99,3 +99,27 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+constructs:
+  async:
+    type: queue
+    fifo: false
+    alarm: seantcanavan@gmail.com
+    encryption: 'kmsManaged'
+    batchSize: 1
+    extensions:
+      queue:
+        Properties:
+          ContentBasedDeduplication: false
+    worker:
+      handler: bin/async
+      memorySize: 128
+      timeout: 30
+      package:
+        artifact: bin/async.zip
+      events:
+        - sqs:
+          - ${self:service}-jobsAsync-${opt:stage, self:provider.stage}
+
+plugins:
+  - serverless-lift
