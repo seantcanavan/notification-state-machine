@@ -66,8 +66,11 @@ functions:
     events:
       - stream:
           arn: arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}
+          type: dynamodb
+          batchSize: 10
+          enabled: true
           filterPatterns:
-            - eventName: [REMOVE]
+            - eventName: [ REMOVE ]
 
 resources: # CloudFormation template syntax from here on.
   Resources:
