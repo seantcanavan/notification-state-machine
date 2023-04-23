@@ -9,6 +9,7 @@ import (
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/job"
 	"github.com/seantcanavan/notification-step-machine/job/audit"
+	"github.com/seantcanavan/notification-step-machine/security"
 	"log"
 	"net/http"
 	"os"
@@ -31,7 +32,11 @@ func init() {
 
 	// Audit endpoints
 	router.Route("GET", "/audit/:jobId", audit.GetLambda, lambda_jwt.DecodeStandard)
-	router.Route("POST", "/audit", audit.CreateLambda, lambda_jwt.DecodeStandard)
+
+	// Security endpoints
+	router.Route("POST", "/login", security.LoginLambda)
+	//router.Route("POST", "security/login", security.LoginLambda)
+
 }
 
 func main() {
