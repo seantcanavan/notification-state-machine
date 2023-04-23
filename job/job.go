@@ -126,13 +126,10 @@ func Get(ctx context.Context, id string) (*Job, int, error) {
 	}
 
 	gio, err := database_job.Client.GetItemWithContext(ctx, &dynamodb.GetItemInput{
-		AttributesToGet:          nil,
-		ConsistentRead:           nil,
-		ExpressionAttributeNames: nil,
-		Key:                      nil,
-		ProjectionExpression:     nil,
-		ReturnConsumedCapacity:   nil,
-		TableName:                nil,
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {S: aws.String(id)},
+		},
+		TableName: database_job.TableName,
 	})
 	if err != nil {
 		return nil, util.DecodeAWSErr(err), err
