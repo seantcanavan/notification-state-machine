@@ -103,6 +103,9 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        TimeToLiveSpecification:
+          AttributeName: expiresAt
+          Enabled: true
 
 constructs:
   async:

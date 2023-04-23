@@ -12,13 +12,13 @@ import (
 )
 
 type JobAudit struct {
-	Created        time.Time
-	ID             string
-	JobID          string
-	NextStatus     enum.Status
-	Operation      enum.Operation
-	PreviousStatus enum.Status
-	Updated        time.Time
+	Created        time.Time      `json:"created,omitempty" dynamodbav:"created,omitempty"`
+	ID             string         `json:"id,omitempty" dynamodbav:"id,omitempty"`
+	JobID          string         `json:"jobId,omitempty" dynamodbav:"jobId,omitempty"`
+	NextStatus     enum.Status    `json:"nextStatus,omitempty" dynamodbav:"nextStatus"`
+	Operation      enum.Operation `json:"operation,omitempty" dynamodbav:"operation"`
+	PreviousStatus enum.Status    `json:"previousStatus,omitempty" dynamodbav:"previousStatus"`
+	Updated        time.Time      `json:"updted,omitempty" dynamodbav:"updated"`
 }
 
 type CreateReq struct {

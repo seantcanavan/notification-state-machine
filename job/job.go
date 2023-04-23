@@ -25,18 +25,18 @@ type CreateReq struct {
 }
 
 type Job struct {
-	Created       time.Time
-	EmailMetadata *metadata.Email
-	From          string
-	ID            string
-	SMSMetadata   *metadata.SMS
-	SnailMetadata *metadata.Snail
-	Status        enum.Status
-	Template      string
-	To            string
-	Type          enum.Type
-	Updated       time.Time
-	Variables     map[string]interface{}
+	Created       time.Time              `json:"created,omitempty" dynamodbav:"created,omitempty"`
+	EmailMetadata *metadata.Email        `json:"emailMetadata,omitempty" dynamodbav:"emailMetadata,omitempty"`
+	From          string                 `json:"from,omitempty" dynamodbav:"from,omitempty"`
+	ID            string                 `json:"id,omitempty" dynamodbav:"id,omitempty"`
+	SMSMetadata   *metadata.SMS          `json:"smsMetadata,omitempty" dynamodbav:"smsMetadata,omitempty"`
+	SnailMetadata *metadata.Snail        `json:"snailMetadata,omitempty" dynamodbav:"snailMetadata,omitempty"`
+	Status        enum.Status            `json:"status,omitempty" dynamodbav:"status,omitempty"`
+	Template      string                 `json:"template,omitempty" dynamodbav:"template,omitempty"`
+	To            string                 `json:"to,omitempty" dynamodbav:"to,omitempty"`
+	Type          enum.Type              `json:"type,omitempty" dynamodbav:"type,omitempty"`
+	Updated       time.Time              `json:"updated,omitempty" dynamodbav:"updated,omitempty"`
+	Variables     map[string]interface{} `json:"variables,omitempty" dynamodbav:"variables,omitempty"`
 }
 
 func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {

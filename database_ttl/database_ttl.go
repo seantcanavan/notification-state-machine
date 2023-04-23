@@ -10,7 +10,6 @@ import (
 )
 
 var Client *dynamodb.DynamoDB
-
 var TableName *string
 
 func Connect() {
