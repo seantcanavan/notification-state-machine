@@ -132,7 +132,7 @@ resources: # CloudFormation template syntax from here on.
           AttributeName: ttl
           Enabled: true
         StreamSpecification:
-          StreamViewType: NEW_AND_OLD_IMAGES
+          StreamViewType: OLD_IMAGE
 
 constructs:
   async:

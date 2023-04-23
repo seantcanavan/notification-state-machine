@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -24,14 +25,12 @@ func main() {
 }
 
 // changed type of event from: events.DynamoDBEvent to DynamoDBEvent (see below)
-func lambdaHandler(event DynamoDBEvent) error {
+func lambdaHandler(ctx context.Context, event DynamoDBEvent) error {
 
 	for _, record := range event.Records {
 		var beforeCReq job.CreateReq
-		var afterCReq job.CreateReq
 
 		change := record.Change
-		newImage := change.NewImage // now of type: map[string]*dynamodb.AttributeValue
 		oldImage := change.OldImage // now of type: map[string]*dynamodb.AttributeValue
 
 		err1 := dynamodbattribute.UnmarshalMap(oldImage, &beforeCReq)
@@ -39,20 +38,13 @@ func lambdaHandler(event DynamoDBEvent) error {
 			return err1
 		}
 
-		err2 := dynamodbattribute.UnmarshalMap(newImage, &afterCReq)
-		if err2 != nil {
-			return err2
+		thawed, httpStatus, err := job.Create(ctx, &beforeCReq)
+		if err != nil {
+			fmt.Println(fmt.Sprintf("got status [%d] and err [%+v] thawing beforeCReq [%+v]", httpStatus, err, thawed))
 		}
-
-		fmt.Println(fmt.Sprintf("beforeCReq [%+v]", beforeCReq))
-		fmt.Println(fmt.Sprintf("afterCReq [%+v]", afterCReq))
 	}
 
 	return nil
-}
-
-type IdOnly struct {
-	Id string `json:"id"`
 }
 
 type DynamoDBEvent struct {
