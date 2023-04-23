@@ -15,7 +15,8 @@ import (
 )
 
 type JobAudit struct {
-	Created        time.Time      `json:"created,omitempty" dynamodbav:"gsi1-rk1,omitempty"`
+	Created        time.Time      `json:"created,omitempty" dynamodbav:"created,omitempty"`
+	GSI1RK1Created time.Time      `json:"-" dynamodbav:"gsi1-rk1,omitempty"`
 	ID             string         `json:"id,omitempty" dynamodbav:"id,omitempty"`
 	JobID          string         `json:"jobId,omitempty" dynamodbav:"gsi1,omitempty"`
 	NextStatus     enum.Status    `json:"nextStatus,omitempty" dynamodbav:"nextStatus"`
@@ -41,6 +42,7 @@ func Create(ctx context.Context, cReq *CreateReq) (*JobAudit, int, error) {
 
 	jobAudit := &JobAudit{
 		Created:        now,
+		GSI1RK1Created: now,
 		ID:             util.NewUUID(),
 		JobID:          "AUD|" + cReq.JobID, // single table define. prefix with A| for audit entries
 		NextStatus:     cReq.NextStatus,
