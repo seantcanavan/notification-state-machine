@@ -31,6 +31,7 @@ deps:
 	go install github.com/seantcanavan/fresh/v2@latest
 	npm install -g serverless
 	serverless plugin install -n serverless-lift
+	serverless plugin install -n serverless-step-functions
 
 format:
 	go fmt ./...
