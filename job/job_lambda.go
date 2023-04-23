@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"fmt"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/seantcanavan/lambda_jwt_router/lambda_router"
 	"net/http"
@@ -17,15 +18,17 @@ func CreateLambda(ctx context.Context, lambdaReq events.APIGatewayProxyRequest) 
 	if cReq.ExpiresAt != nil {
 		frozen, createStatus, createErr := Freeze(ctx, &cReq)
 		if createErr != nil {
-			return lambda_router.StatusAndErrorRes(createStatus, err)
+			return lambda_router.StatusAndErrorRes(createStatus, createErr)
 		}
 
 		return lambda_router.SuccessRes(frozen)
 	}
 
+	fmt.Println("new print statement")
+
 	job, createStatus, createErr := Create(ctx, &cReq)
 	if createErr != nil {
-		return lambda_router.StatusAndErrorRes(createStatus, err)
+		return lambda_router.StatusAndErrorRes(createStatus, createErr)
 	}
 
 	return lambda_router.SuccessRes(job)

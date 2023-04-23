@@ -21,27 +21,27 @@ provider:
     LAMBDA_JWT_ROUTER_HMAC_SECRET: ${param:LAMBDA_JWT_ROUTER_HMAC_SECRET}
     REGION_AWS: ${param:REGION_AWS}
     STAGE: ${param:STAGE}
-#  iam:
-#    role:
-#      statements:
-#        - Effect: Allow
-#          Action:
-#            - dynamodb:Query
-#            - dynamodb:Scan
-#            - dynamodb:GetItem
-#            - dynamodb:PutItem
-#            - dynamodb:UpdateItem
-#            - dynamodb:DeleteItem
-#          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}"
-#        - Effect: Allow
-#          Action:
-#            - dynamodb:Query
-#            - dynamodb:Scan
-#            - dynamodb:GetItem
-#            - dynamodb:PutItem
-#            - dynamodb:UpdateItem
-#            - dynamodb:DeleteItem
-#          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}"
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}"
 
 functions:
   api:
