@@ -64,6 +64,8 @@ func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
 		return nil, http.StatusInternalServerError, marshalErr
 	}
 
+	fmt.Println(fmt.Sprintf("cReq.ExpiresAt is [%+v]", *cReq.ExpiresAt))
+
 	if cReq.ExpiresAt != nil {
 		_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
 			ConditionExpression: aws.String("attribute_not_exists(id)"),
