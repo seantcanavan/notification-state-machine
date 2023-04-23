@@ -1,4 +1,4 @@
-package thaw
+package main
 
 import (
 	"context"
