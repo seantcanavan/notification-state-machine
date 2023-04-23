@@ -116,7 +116,6 @@ resources: # CloudFormation template syntax from here on.
           WriteCapacityUnits: 1
         StreamSpecification:
           StreamViewType: NEW_IMAGE
-          StreamEnabled: true
     jobsTTLTable:
       Type: AWS::DynamoDB::Table
       Properties:
