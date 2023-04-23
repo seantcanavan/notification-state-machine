@@ -12,14 +12,90 @@ provider:
   runtime: go1.x
   memorySize: 256 # optional, in MB, default is 1024
   environment:
-    APP_NAME: ${param:APP_NAME}
-    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-    CONNECTION_STRING_METADATA: ${param:CONNECTION_STRING_METADATA}
-    CONNECTION_STRING_TTL: ${param:CONNECTION_STRING_TTL}
-    LAMBDA_JWT_ROUTER_CORS_HEADERS: ${param:LAMBDA_JWT_ROUTER_CORS_HEADERS}
-    LAMBDA_JWT_ROUTER_CORS_METHODS: ${param:LAMBDA_JWT_ROUTER_CORS_METHODS}
-    LAMBDA_JWT_ROUTER_CORS_ORIGIN: ${param:LAMBDA_JWT_ROUTER_CORS_ORIGIN}
-    LAMBDA_JWT_ROUTER_HMAC_SECRET: ${param:LAMBDA_JWT_ROUTER_HMAC_SECRET}
-    REGION_AWS: ${param:REGION_AWS}
-    STAGE: ${param:STAGE}
+#    APP_NAME: ${param:APP_NAME}
+#    AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+#    AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+#    CONNECTION_STRING_METADATA: ${param:CONNECTION_STRING_METADATA}
+#    CONNECTION_STRING_TTL: ${param:CONNECTION_STRING_TTL}
+#    DYNAMODB_JOBS_TTL_TABLE_NAME: ${self:service}-${opt:stage, self:provider.stage}
+#    DYNAMODB_JOBS_TABLE_NAME: ${self:service}-${opt:stage, self:provider.stage}
+#    LAMBDA_JWT_ROUTER_CORS_HEADERS: ${param:LAMBDA_JWT_ROUTER_CORS_HEADERS}
+#    LAMBDA_JWT_ROUTER_CORS_METHODS: ${param:LAMBDA_JWT_ROUTER_CORS_METHODS}
+#    LAMBDA_JWT_ROUTER_CORS_ORIGIN: ${param:LAMBDA_JWT_ROUTER_CORS_ORIGIN}
+#    LAMBDA_JWT_ROUTER_HMAC_SECRET: ${param:LAMBDA_JWT_ROUTER_HMAC_SECRET}
+#    REGION_AWS: ${param:REGION_AWS}
+#    STAGE: ${param:STAGE}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}"
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TABLE_NAME}"
+
+functions:
+  api:
+    timeout: 30
+    handler: bin/api
+    package:
+      artifact: bin/api.zip
+    events:
+      - http:
+          method: any
+          path: /{proxy+}
+          cors: true
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    jobsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: jobsTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: gsi1
+            AttributeType: S
+          - AttributeName: gsi1-rk1
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: gsi1
+            KeyType: HASH
+          - AttributeName: gsi1-rk1
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    jobsTTLTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: jobsTTLTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: range
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: range
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
