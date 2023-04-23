@@ -95,6 +95,8 @@ resources: # CloudFormation template syntax from here on.
             AttributeType: S
           - AttributeName: range
             AttributeType: S
+          - AttributeName: expiresAt
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
