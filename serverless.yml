@@ -58,6 +58,16 @@ functions:
           method: any
           path: /{proxy+}
           cors: true
+  thaw:
+    timeout: 30
+    handler: bin/thaw
+    package:
+      artifact: bin/thaw.zip
+    events:
+      - stream:
+          arn: arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}
+          filterPatterns:
+            - eventName: [REMOVE]
 
 resources: # CloudFormation template syntax from here on.
   Resources:
@@ -136,3 +146,4 @@ constructs:
 
 plugins:
   - serverless-lift
+  - serverless-step-functions

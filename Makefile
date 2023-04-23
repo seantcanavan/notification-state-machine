@@ -7,6 +7,8 @@ build: clean
 	zip bin/api.zip bin/api
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/sqs cmd/sqs/sqs.go
 	zip bin/sqs.zip bin/sqs
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/thaw cmd/thaw/thaw.go
+	zip bin/thaw.zip bin/thaw
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/one cmd/1/one.go
 	zip bin/one.zip bin/one
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/two cmd/2/two.go
