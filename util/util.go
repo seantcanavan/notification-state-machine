@@ -2,11 +2,25 @@ package util
 
 import (
 	"crypto/rand"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"log"
 	"math/big"
+	"net/http"
 	"strconv"
 	"strings"
 )
+
+func DecodeAWSErr(err error) int {
+	if err == nil {
+		return http.StatusOK
+	}
+
+	if reqErr, ok := err.(awserr.RequestFailure); ok {
+		return reqErr.StatusCode()
+	}
+
+	return http.StatusInternalServerError
+}
 
 func GenerateRandomString(length int) string {
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

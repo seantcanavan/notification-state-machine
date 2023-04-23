@@ -9,7 +9,6 @@ import (
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/job"
 	"github.com/seantcanavan/notification-step-machine/job/audit"
-	"github.com/seantcanavan/notification-step-machine/queue"
 	"log"
 	"net/http"
 	"os"
@@ -23,13 +22,6 @@ func init() {
 
 	database_ttl.Connect()
 	database_job.Connect()
-
-	environment := os.Getenv("STAGE")
-	if environment == "staging" || environment == "production" {
-		queue.NewClient(true)
-	} else {
-		queue.NewClient(false)
-	}
 
 	router = lambda_router.NewRouter("/api", lambda_jwt.LogRequestMW)
 

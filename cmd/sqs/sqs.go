@@ -1,17 +1,16 @@
 package main
 
 import (
-	lf_queue "github.com/seantcanavan/notification-step-machine/queue"
-	"os"
+	"github.com/seantcanavan/notification-step-machine/database_job"
+	"github.com/seantcanavan/notification-step-machine/database_ttl"
+	"time"
 )
 
 func init() {
-	environment := os.Getenv("STAGE")
-	if environment == "staging" || environment == "production" {
-		lf_queue.NewClient(true)
-	} else {
-		lf_queue.NewClient(false)
-	}
+	time.Local = time.UTC // force GoLang to use UTC as the default time zone for all calculations
+
+	database_ttl.Connect()
+	database_job.Connect()
 }
 
 func main() {
