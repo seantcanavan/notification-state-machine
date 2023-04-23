@@ -65,8 +65,8 @@ functions:
       artifact: bin/thaw.zip
     events:
       - stream:
-          arn: arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_JOBS_TTL_TABLE_NAME}/stream/2023-04-23T16:48:53.261
-#          arn: arn:aws:dynamodb:us-east-2:205503630745:table/notification-step-machine-jobsTTL3-staging/stream/2023-04-23T16:48:53.261
+          arn:
+            Fn::GetAtt: [ jobsTTLTable, StreamArn ]
           type: dynamodb
           batchSize: 10
           enabled: true
