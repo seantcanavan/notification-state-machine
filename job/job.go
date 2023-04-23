@@ -25,7 +25,7 @@ type CreateReq struct {
 	Type      enum.Type              `json:"type,omitempty" dynamodbav:"type,omitempty"`
 	Updated   *time.Time             `json:"updated,omitempty" dynamodbav:"updated,omitempty"`
 	Variables map[string]interface{} `json:"variables,omitempty" dynamodbav:"variables,omitempty"`
-	ttl       int64                  `json:"-" dynamodbav:"ttl,omitempty"`
+	TTL       int64                  `json:"-" dynamodbav:"ttl,omitempty"`
 }
 
 type Job struct {
@@ -98,7 +98,7 @@ func Freeze(ctx context.Context, cReq *CreateReq) (*CreateReq, int, error) {
 	cReq.Created = &now
 	cReq.ID = aws.String(util.NewUUID())
 	cReq.Updated = &now
-	cReq.ttl = cReq.ExpiresAt.Unix()
+	cReq.TTL = cReq.ExpiresAt.Unix()
 
 	marshalled, marshalErr := dynamodbattribute.MarshalMap(cReq)
 	if marshalErr != nil {
