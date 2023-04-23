@@ -3,8 +3,10 @@ package job
 import (
 	"context"
 	"fmt"
+	"github.com/seantcanavan/lambda_jwt_router/lambda_util"
 	"github.com/seantcanavan/notification-step-machine/enum"
 	"github.com/seantcanavan/notification-step-machine/metadata"
+	"github.com/seantcanavan/notification-step-machine/util"
 	"net/http"
 	"time"
 )
@@ -42,5 +44,15 @@ func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
 func Get(ctx context.Context, id string) (*Job, int, error) {
 	if id == "" {
 		return nil, http.StatusBadRequest, fmt.Errorf("parameter id [%s] is required", id)
+	}
+}
+
+func GenerateRandom() *CreateReq {
+ 	return &CreateReq{
+		From:      util.GenerateRandomString(15),
+		Template:  util.GenerateRandomString(15),
+		To:        util.GenerateRandomEmail(),
+		Type:      enum.Email,
+		Variables:
 	}
 }

@@ -7,6 +7,8 @@ import (
 	"github.com/seantcanavan/lambda_jwt_router/lambda_router"
 	"github.com/seantcanavan/notification-step-machine/database_job"
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
+	"github.com/seantcanavan/notification-step-machine/job"
+	"github.com/seantcanavan/notification-step-machine/job/audit"
 	"github.com/seantcanavan/notification-step-machine/queue"
 	"log"
 	"net/http"
@@ -32,8 +34,12 @@ func init() {
 	router = lambda_router.NewRouter("/api", lambda_jwt.LogRequestMW)
 
 	// Notifications endpoints
-	router.Route("POST", "/notifications", CreateLambda, lambda_jwt.DecodeExpanded)
-	router.Route("GET", "/notifications/:id", GetLambda, lambda_jwt.DecodeExpanded)
+	router.Route("GET", "/notifications/:id", job.GetLambda, lambda_jwt.DecodeStandard)
+	router.Route("POST", "/notifications", job.CreateLambda, lambda_jwt.DecodeStandard)
+
+	// Audit endpoints
+	router.Route("GET", "/audit/:jobId", audit.GetLambda, lambda_jwt.DecodeStandard)
+	router.Route("POST", "/audit", audit.CreateLambda, lambda_jwt.DecodeStandard)
 }
 
 func main() {
