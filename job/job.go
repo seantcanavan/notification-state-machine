@@ -3,8 +3,11 @@ package job
 import (
 	"context"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/seantcanavan/notification-step-machine/database_job"
+	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/enum"
 	"github.com/seantcanavan/notification-step-machine/metadata"
 	"github.com/seantcanavan/notification-step-machine/util"
@@ -13,7 +16,7 @@ import (
 )
 
 type CreateReq struct {
-	ExpiresAt time.Time              `json:"expiresAt,omitempty"`
+	ExpiresAt *time.Time             `json:"expiresAt,omitempty"`
 	From      string                 `json:"from,omitempty"`
 	Template  string                 `json:"template,omitempty"`
 	To        string                 `json:"to,omitempty"`
@@ -37,7 +40,6 @@ type Job struct {
 }
 
 func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
-
 	cReq, httpStatus, err := validateCreateReq(cReq)
 	if err != nil {
 		return nil, httpStatus, err
@@ -57,18 +59,28 @@ func Create(ctx context.Context, cReq *CreateReq) (*Job, int, error) {
 		Variables: cReq.Variables,
 	}
 
-	_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
-		ConditionExpression:         nil,
-		ConditionalOperator:         nil,
-		Expected:                    nil,
-		ExpressionAttributeNames:    nil,
-		ExpressionAttributeValues:   nil,
-		Item:                        nil,
-		ReturnConsumedCapacity:      nil,
-		ReturnItemCollectionMetrics: nil,
-		ReturnValues:                nil,
-		TableName:                   nil,
-	})
+	marshalled, marshalErr := dynamodbattribute.MarshalMap(job)
+	if marshalErr != nil {
+		return nil, http.StatusInternalServerError, marshalErr
+	}
+
+	if cReq.ExpiresAt != nil {
+		_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
+			ConditionExpression: aws.String("attribute_not_exists(id)"),
+			//ExpressionAttributeNames:    nil,
+			//ExpressionAttributeValues:   nil,
+			Item:      marshalled,
+			TableName: database_ttl.TableName,
+		})
+	} else {
+		_, err = database_job.Client.PutItemWithContext(ctx, &dynamodb.PutItemInput{
+			ConditionExpression: aws.String("attribute_not_exists(id)"),
+			//ExpressionAttributeNames:    nil,
+			//ExpressionAttributeValues:   nil,
+			Item:      marshalled,
+			TableName: database_job.TableName,
+		})
+	}
 
 	if err != nil {
 		return nil, util.DecodeAWSErr(err), err
