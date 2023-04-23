@@ -22,6 +22,8 @@ func main() {
 }
 
 func handler(_ context.Context, event events.DynamoDBEvent) error {
-	fmt.Println(fmt.Sprintf("event is [%+v]", event))
+	for _, record := range event.Records {
+		fmt.Println(fmt.Sprintf("record is [%+v]", record))
+	}
 	return nil
 }
