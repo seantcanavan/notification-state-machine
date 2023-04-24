@@ -15,7 +15,7 @@ type SMS struct {
 	SnsID string `json:"snsId,omitempty" dynamodbav:"snsId,omitempty"`
 }
 
-func HandleSMS(ctx context.Context, jobInstance Instance) (int, error) {
+func HandleSMS(ctx context.Context, jobInstance *Instance) (int, error) {
 	num := util.GenerateRandomNumber()
 	uReq := &UpdateReq{
 		Email:          jobInstance.Email,

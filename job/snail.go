@@ -25,7 +25,7 @@ type Snail struct {
 	Address Address `json:"address,omitempty" dynamodbav:"address,omitempty"`
 }
 
-func HandleSnail(ctx context.Context, jobInstance Instance) (int, error) {
+func HandleSnail(ctx context.Context, jobInstance *Instance) (int, error) {
 	num := util.GenerateRandomNumber()
 	uReq := &UpdateReq{
 		Email:          jobInstance.Email,

@@ -47,7 +47,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 			}
 
 			fmt.Println(fmt.Sprintf("jobInstance is [%+v]", jobInstance))
-			esg.AddStatusAndError(delegate(ctx, jobInstance))
+			esg.AddStatusAndError(delegate(ctx, &jobInstance))
 			wg.Done()
 		}(currentRecord)
 	}
@@ -60,7 +60,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 	return esg.ToError()
 }
 
-func delegate(ctx context.Context, jobInstance job.Instance) (int, error) {
+func delegate(ctx context.Context, jobInstance *job.Instance) (int, error) {
 	fmt.Println(fmt.Sprintf("jobInstance.Type is [%+v]", jobInstance.Type))
 	if jobInstance.Type == enum.SMS {
 		return job.HandleSMS(ctx, jobInstance)

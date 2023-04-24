@@ -13,7 +13,7 @@ type Email struct {
 	SesID string `json:"sesId,omitempty" dynamodbav:"sesId,omitempty"`
 }
 
-func HandleEmail(ctx context.Context, jobInstance Instance) (int, error) {
+func HandleEmail(ctx context.Context, jobInstance *Instance) (int, error) {
 	num := util.GenerateRandomNumber()
 	uReq := &UpdateReq{
 		Email:          jobInstance.Email,
