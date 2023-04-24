@@ -97,7 +97,7 @@ functions:
                 NewImage:
                   type:
                     S:
-                      - exists: [True]
+                      - exists: true
 
   thaw:
     timeout: 180
