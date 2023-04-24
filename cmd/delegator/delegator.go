@@ -29,6 +29,7 @@ func main() {
 
 // changed type of event from: events.DynamoDBEvent to DynamoDBEvent (see below)
 func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
+	randomID := util.GenerateRandomString(10)
 	fmt.Println(fmt.Sprintf("delegator.lambdaHandler invoked"))
 	esg := error_group.NewErrorStatusGroup()
 
@@ -37,7 +38,6 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	for _, currentRecord := range event.Records {
 		go func(record util.DynamoDBEventRecord) {
-			fmt.Println(fmt.Sprintf("StreamViewType type is [%s]", record.Change.StreamViewType))
 			change := record.Change
 			newImage := change.NewImage
 
@@ -46,23 +46,21 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 			if unmarshalErr != nil {
 				esg.AddStatusAndError(http.StatusInternalServerError, unmarshalErr)
 			}
-
-			fmt.Println(fmt.Sprintf("delegator.go jobInstance is [%+v]", jobInstance))
-			esg.AddStatusAndError(delegate(ctx, &jobInstance))
+			fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] StreamViewType type is [%s]", randomID, jobInstance.ID, record.Change.StreamViewType))
+			fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] delegator.go jobInstance is [%+v]", randomID, jobInstance.ID, jobInstance))
+			esg.AddStatusAndError(delegate(ctx, randomID, &jobInstance))
 			wg.Done()
 		}(currentRecord)
 	}
 
 	wg.Wait()
 
-	fmt.Println(fmt.Sprintf("delegator.go  hightest status [%d]", esg.HighestStatus()))
-	fmt.Println(fmt.Sprintf("delegator.go  error [%+v]", esg.ToError()))
+	fmt.Println(fmt.Sprintf("RandomID: [%s] delegator.go error [%+v]", randomID, esg.ToError()))
 
 	return esg.ToError()
 }
 
-func delegate(ctx context.Context, jobInstance *job.Instance) (int, error) {
-	fmt.Println(fmt.Sprintf("delegator.go  jobInstance.Type is [%+v]", jobInstance.Type))
+func delegate(ctx context.Context, randomID string, jobInstance *job.Instance) (int, error) {
 	if jobInstance.Type == enum.SMS {
 		return job.HandleSMS(ctx, jobInstance)
 	} else if jobInstance.Type == enum.Email {
@@ -70,6 +68,6 @@ func delegate(ctx context.Context, jobInstance *job.Instance) (int, error) {
 	} else if jobInstance.Type == enum.Snail {
 		return job.HandleSnail(ctx, jobInstance)
 	} else {
-		return http.StatusBadRequest, fmt.Errorf("unknown jobInstance.Type [%+v]", jobInstance.Type)
+		return http.StatusBadRequest, fmt.Errorf("RandomID: [%s] ID: [%s] unknown jobInstance.Type [%+v]", randomID, jobInstance.ID, jobInstance.Type)
 	}
 }

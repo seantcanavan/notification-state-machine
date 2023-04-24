@@ -1,7 +1,6 @@
 package database_ttl
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -13,7 +12,6 @@ var Client *dynamodb.DynamoDB
 var TableName *string
 
 func Connect() {
-	fmt.Println("attempting to connect to ttl database")
 	region := os.Getenv("REGION_AWS")
 	stage := os.Getenv("STAGE")
 
@@ -29,12 +27,7 @@ func Connect() {
 		log.Fatal("REGION_AWS is not set")
 	}
 	Client = dynamodb.New(mySession, aws.NewConfig().WithRegion(region))
-
-	fmt.Println("successfully connected to ttl database")
 }
 
 func Disconnect() {
-	fmt.Println("attempting to disconnect from ttl database")
-	// any cleanup code required here? probably not because dynamo is awesome
-	fmt.Println("successfully disconnected from ttl database")
 }
