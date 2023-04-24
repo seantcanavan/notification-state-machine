@@ -49,6 +49,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 			}
 
 			esg.AddStatusAndError(delegate(ctx, jobInstance))
+			wg.Done()
 		}(currentRecord)
 	}
 
