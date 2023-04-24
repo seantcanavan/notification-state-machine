@@ -37,6 +37,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 			return err1
 		}
 
+		fmt.Println(fmt.Sprintf("beforeCReq is [%+v]", beforeCReq))
 		thawed, httpStatus, err := job.Create(ctx, &beforeCReq)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("got status [%d] and err [%+v] thawing beforeCReq [%+v]", httpStatus, err, thawed))

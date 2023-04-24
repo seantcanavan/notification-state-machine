@@ -37,8 +37,6 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	for _, currentRecord := range event.Records {
 		go func(record util.DynamoDBEventRecord) {
-			fmt.Println(fmt.Sprintf("record is [%+v]", record))
-
 			change := record.Change
 			newImage := change.NewImage
 
@@ -48,6 +46,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 				esg.AddStatusAndError(http.StatusInternalServerError, unmarshalErr)
 			}
 
+			fmt.Println(fmt.Sprintf("jobInstance is [%+v]", jobInstance))
 			esg.AddStatusAndError(delegate(ctx, jobInstance))
 			wg.Done()
 		}(currentRecord)
