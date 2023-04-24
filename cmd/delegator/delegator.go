@@ -37,6 +37,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	for _, currentRecord := range event.Records {
 		go func(record util.DynamoDBEventRecord) {
+			fmt.Println(fmt.Sprintf("StreamViewType type is [%s]", record.Change.StreamViewType))
 			change := record.Change
 			newImage := change.NewImage
 
@@ -46,7 +47,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 				esg.AddStatusAndError(http.StatusInternalServerError, unmarshalErr)
 			}
 
-			fmt.Println(fmt.Sprintf("jobInstance is [%+v]", jobInstance))
+			fmt.Println(fmt.Sprintf("delegator.go jobInstance is [%+v]", jobInstance))
 			esg.AddStatusAndError(delegate(ctx, &jobInstance))
 			wg.Done()
 		}(currentRecord)
@@ -54,14 +55,14 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	wg.Wait()
 
-	fmt.Println(fmt.Sprintf("delegator hightest status [%d]", esg.HighestStatus()))
-	fmt.Println(fmt.Sprintf("delegator error [%+v]", esg.ToError()))
+	fmt.Println(fmt.Sprintf("delegator.go  hightest status [%d]", esg.HighestStatus()))
+	fmt.Println(fmt.Sprintf("delegator.go  error [%+v]", esg.ToError()))
 
 	return esg.ToError()
 }
 
 func delegate(ctx context.Context, jobInstance *job.Instance) (int, error) {
-	fmt.Println(fmt.Sprintf("jobInstance.Type is [%+v]", jobInstance.Type))
+	fmt.Println(fmt.Sprintf("delegator.go  jobInstance.Type is [%+v]", jobInstance.Type))
 	if jobInstance.Type == enum.SMS {
 		return job.HandleSMS(ctx, jobInstance)
 	} else if jobInstance.Type == enum.Email {

@@ -167,6 +167,7 @@ func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
 	}
 
 	input := &dynamodb.UpdateItemInput{
+		ConditionExpression:      aws.String("attribute_exists(id)"),
 		ExpressionAttributeNames: map[string]*string{"#S": aws.String("status")},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":status": {
