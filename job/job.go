@@ -145,12 +145,13 @@ func Get(ctx context.Context, id string) (*Instance, int, error) {
 }
 
 type UpdateReq struct {
-	Email     *Email                 `json:"email,omitempty"`
-	ID        string                 `json:"id,omitempty"`
-	SMS       *SMS                   `json:"sms,omitempty"`
-	Snail     *Snail                 `json:"snail,omitempty"`
-	Status    enum.Status            `json:"status,omitempty"`
-	Variables map[string]interface{} `json:"variables,omitempty"`
+	Email          *Email                 `json:"email,omitempty"`
+	ID             string                 `json:"id,omitempty"`
+	SMS            *SMS                   `json:"sms,omitempty"`
+	Snail          *Snail                 `json:"snail,omitempty"`
+	Variables      map[string]interface{} `json:"variables,omitempty"`
+	NextStatus     enum.Status            `json:"nextStatus,omitempty" `
+	PreviousStatus enum.Status            `json:"previousStatus,omitempty"`
 }
 
 func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
@@ -167,7 +168,7 @@ func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
 	input := &dynamodb.UpdateItemInput{
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":status": {
-				S: aws.String(uReq.Status.String()),
+				S: aws.String(uReq.NextStatus.String()),
 			},
 			":variables": {
 				M: variables,
@@ -217,6 +218,13 @@ func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
 	if err != nil {
 		log.Fatalf("Got error calling UpdateItem: %s", err)
 	}
+
+	audit.CreateSilent(ctx, &audit.CreateReq{
+		JobID:          uReq.ID,
+		NextStatus:     uReq.NextStatus,
+		Operation:      enum.Update,
+		PreviousStatus: uReq.PreviousStatus,
+	})
 
 	var jobInstance Instance
 	httpStatus, err = util.ParseUIO(uio, uReq.ID, &jobInstance)
