@@ -54,7 +54,8 @@ func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
 	return updateStatus, updateErr
 }
 
-func Nudge(ctx context.Context) (int, error) {
+func Nudge(_ context.Context) (int, error) {
+	fmt.Println("running Nudge for email.go")
 	return 0, nil
 }
 

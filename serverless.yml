@@ -58,20 +58,6 @@ functions:
           method: any
           path: /{proxy+}
           cors: true
-  thaw:
-    timeout: 180
-    handler: bin/thaw
-    package:
-      artifact: bin/thaw.zip
-    events:
-      - stream:
-          arn:
-            Fn::GetAtt: [ jobsTTLTable, StreamArn ]
-          type: dynamodb
-          batchSize: 10
-          enabled: true
-          filterPatterns:
-            - eventName: [ REMOVE ]
   cleanup:
     timeout: 180
     handler: bin/cleanup
@@ -93,6 +79,35 @@ functions:
           input:
             type: 'Snail'
           enabled: true
+  delegator:
+    timeout: 180
+    handler: bin/delegator
+    package:
+      artifact: bin/delegator.zip
+    events:
+      - stream:
+          arn:
+            Fn::GetAtt: [ jobsTable, StreamArn ]
+          type: dynamodb
+          batchSize: 10
+          enabled: true
+          filterPatterns:
+            - eventName: [ UPDATE ]
+  thaw:
+    timeout: 180
+    handler: bin/thaw
+    package:
+      artifact: bin/thaw.zip
+    events:
+      - stream:
+          arn:
+            Fn::GetAtt: [ jobsTTLTable, StreamArn ]
+          type: dynamodb
+          batchSize: 10
+          enabled: true
+          filterPatterns:
+            - eventName: [ REMOVE ]
+
 
 resources: # CloudFormation template syntax from here on.
   Resources:
@@ -136,6 +151,8 @@ resources: # CloudFormation template syntax from here on.
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
     jobsTTLTable:
       Type: AWS::DynamoDB::Table
       Properties:

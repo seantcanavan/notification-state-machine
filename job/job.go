@@ -216,7 +216,7 @@ func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
 		input.UpdateExpression = aws.String(current + ", snail = :snail")
 	}
 
-	uio, err := database_job.Client.UpdateItem(input)
+	uio, err := database_job.Client.UpdateItemWithContext(ctx, input)
 	if err != nil {
 		log.Fatalf("Got error calling UpdateItem: %s", err)
 	}

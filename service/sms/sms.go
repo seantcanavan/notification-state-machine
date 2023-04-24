@@ -56,8 +56,8 @@ func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
 	return updateStatus, updateErr
 }
 
-func Nudge(ctx context.Context) (int, error) {
-	fmt.Println(fmt.Sprintf("nuding all values older than [%+v]", OldThreshold))
+func Nudge(_ context.Context) (int, error) {
+	fmt.Println("running Nudge for sms.go")
 	return 0, nil
 }
 
