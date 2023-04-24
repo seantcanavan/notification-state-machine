@@ -38,6 +38,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	for _, currentRecord := range event.Records {
 		go func(record util.DynamoDBEventRecord) {
+			defer wg.Done()
 			change := record.Change
 			newImage := change.NewImage
 
@@ -46,10 +47,14 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 			if unmarshalErr != nil {
 				esg.AddStatusAndError(http.StatusInternalServerError, unmarshalErr)
 			}
+			if jobInstance.Type == "" {
+				return
+			}
+
 			fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] StreamViewType type is [%s]", randomID, jobInstance.ID, record.Change.StreamViewType))
 			fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] delegator.go jobInstance is [%+v]", randomID, jobInstance.ID, jobInstance))
 			esg.AddStatusAndError(delegate(ctx, randomID, &jobInstance))
-			wg.Done()
+
 		}(currentRecord)
 	}
 

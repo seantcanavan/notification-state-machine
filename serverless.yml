@@ -93,10 +93,6 @@ functions:
           enabled: true
           filterPatterns:
             - eventName: [ INSERT, MODIFY ]
-              dynamodb:
-                NewImage:
-                  type:
-                    S: [ Email, SMS, Snail ]
 
   thaw:
     timeout: 180
