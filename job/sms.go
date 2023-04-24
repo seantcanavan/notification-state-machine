@@ -1,10 +1,9 @@
-package sms
+package job
 
 import (
 	"context"
 	"fmt"
 	"github.com/seantcanavan/notification-step-machine/enum"
-	"github.com/seantcanavan/notification-step-machine/job"
 	"github.com/seantcanavan/notification-step-machine/util"
 	"net/http"
 	"time"
@@ -12,13 +11,13 @@ import (
 
 var OldThreshold = time.Now().AddDate(0, 0, -1)
 
-type Instance struct {
+type SMS struct {
 	SnsID string
 }
 
-func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
+func HandleSMS(ctx context.Context, jobInstance Instance) (int, error) {
 	num := util.GenerateRandomNumber()
-	uReq := &job.UpdateReq{
+	uReq := &UpdateReq{
 		Email:     jobInstance.Email,
 		ID:        jobInstance.ID,
 		SMS:       jobInstance.SMS,
@@ -31,7 +30,7 @@ func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
 		return http.StatusOK, nil
 	} else if num < 4 { // move to the error state
 		uReq.Status = enum.Error
-		_, updateStatus, updateErr := job.Update(ctx, uReq)
+		_, updateStatus, updateErr := Update(ctx, uReq)
 		return updateStatus, updateErr
 	}
 
@@ -52,22 +51,22 @@ func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
 		return http.StatusOK, nil
 	}
 
-	_, updateStatus, updateErr := job.Update(ctx, uReq)
+	_, updateStatus, updateErr := Update(ctx, uReq)
 	return updateStatus, updateErr
 }
 
-func Nudge(_ context.Context) (int, error) {
-	fmt.Println("running Nudge for sms.go")
+func NudgeSMS(_ context.Context) (int, error) {
+	fmt.Println("running NudgeSMS for sms.go")
 	return 0, nil
 }
 
-func GenerateRandom() *job.Instance {
+func GenerateRandomSMS() *Instance {
 	now := time.Now()
-	return &job.Instance{
+	return &Instance{
 		Created:   now,
 		From:      util.GenerateRandomString(10),
 		ID:        util.NewUUID(),
-		SMS:       &Instance{SnsID: util.GenerateRandomString(10)},
+		SMS:       &SMS{SnsID: util.GenerateRandomString(10)},
 		Status:    enum.Created,
 		Template:  util.GenerateRandomString(10),
 		To:        util.GenerateRandomString(10),

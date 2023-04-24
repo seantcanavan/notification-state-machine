@@ -1,22 +1,33 @@
-package email
+package job
 
 import (
 	"context"
 	"fmt"
 	"github.com/seantcanavan/notification-step-machine/enum"
-	"github.com/seantcanavan/notification-step-machine/job"
 	"github.com/seantcanavan/notification-step-machine/util"
 	"net/http"
 	"time"
 )
 
-type Instance struct {
-	SesID string
+type Address struct {
+	City            string  // US city
+	Formatted       string  // Google Maps JavaScript API formatted string
+	Latitude        float32 // Google Maps JavaScript API Latitude value
+	Longitude       float32 // Google Maps JavaScript API Longitude value
+	NumberAndStreet string  // The physical number of the address and the street
+	Plus            int     // The 4 digit 'Plus' code after the zip. E.G. {zip}-{plus}
+	State           string  // The two digit state code
+	Unit            string  // optional apartment, unit, suite, etc
+	Zip             int     // The 5 digit Zip code
 }
 
-func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
+type Snail struct {
+	Address Address
+}
+
+func HandleSnail(ctx context.Context, jobInstance Instance) (int, error) {
 	num := util.GenerateRandomNumber()
-	uReq := &job.UpdateReq{
+	uReq := &UpdateReq{
 		Email:     jobInstance.Email,
 		ID:        jobInstance.ID,
 		SMS:       jobInstance.SMS,
@@ -29,7 +40,7 @@ func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
 		return http.StatusOK, nil
 	} else if num < 4 { // move to the error state
 		uReq.Status = enum.Error
-		_, updateStatus, updateErr := job.Update(ctx, uReq)
+		_, updateStatus, updateErr := Update(ctx, uReq)
 		return updateStatus, updateErr
 	}
 
@@ -50,36 +61,50 @@ func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
 		return http.StatusOK, nil
 	}
 
-	_, updateStatus, updateErr := job.Update(ctx, uReq)
+	_, updateStatus, updateErr := Update(ctx, uReq)
 	return updateStatus, updateErr
 }
 
-func Nudge(_ context.Context) (int, error) {
-	fmt.Println("running Nudge for email.go")
+func NudgeSnail(_ context.Context) (int, error) {
+	fmt.Println("running NudgeSnail for snail.go")
 	return 0, nil
 }
 
-func GenerateRandom() *job.Instance {
-	now := time.Now()
-	return &job.Instance{
-		Created:   now,
-		Email:     &Instance{SesID: util.GenerateRandomString(10)},
-		From:      util.GenerateRandomString(10),
-		ID:        util.NewUUID(),
-		Status:    enum.Created,
-		Template:  util.GenerateRandomString(10),
-		To:        util.GenerateRandomString(10),
-		Type:      enum.Email,
-		Updated:   now,
-		Variables: GenerateRandomEmailVariables(),
+func GenerateRandomAddress() Address {
+	return Address{
+		City:            util.GenerateRandomString(2),
+		Formatted:       util.GenerateRandomString(25),
+		Latitude:        util.GenerateRandomFloat(),
+		Longitude:       util.GenerateRandomFloat(),
+		NumberAndStreet: util.GenerateRandomString(10),
+		Plus:            util.GenerateNumberWithLength(4),
+		State:           util.GenerateRandomString(2),
+		Unit:            util.GenerateRandomString(8),
+		Zip:             util.GenerateNumberWithLength(5),
 	}
 }
 
-func GenerateRandomEmailVariables() map[string]interface{} {
+func GenerateRandomSnail() *Instance {
+	now := time.Now()
+	return &Instance{
+		Created:   now,
+		From:      util.GenerateRandomString(10),
+		ID:        util.NewUUID(),
+		Snail:     &Snail{Address: GenerateRandomAddress()},
+		Status:    enum.Created,
+		Template:  util.GenerateRandomString(10),
+		To:        util.GenerateRandomString(10),
+		Type:      enum.Snail,
+		Updated:   now,
+		Variables: GenerateRandomSnailVariables(),
+	}
+}
+
+func GenerateRandomSnailVariables() map[string]interface{} {
 	return map[string]interface{}{
+		"address":   GenerateRandomAddress(),
 		"firstName": util.GenerateRandomString(10),
-		"footer":    util.GenerateRandomString(10),
-		"header":    util.GenerateRandomString(10),
 		"lastName":  util.GenerateRandomString(10),
+		"offerCode": util.GenerateRandomString(5),
 	}
 }

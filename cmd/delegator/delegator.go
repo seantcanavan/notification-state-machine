@@ -10,9 +10,6 @@ import (
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/enum"
 	"github.com/seantcanavan/notification-step-machine/job"
-	"github.com/seantcanavan/notification-step-machine/service/email"
-	"github.com/seantcanavan/notification-step-machine/service/sms"
-	"github.com/seantcanavan/notification-step-machine/service/snail"
 	"github.com/seantcanavan/notification-step-machine/util"
 	"net/http"
 	"sync"
@@ -59,14 +56,14 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 	return nil
 }
 
-func delegate(ctx context.Context, job job.Instance) (int, error) {
-	if job.Type == enum.SMS {
-		return sms.Handle(ctx, job)
-	} else if job.Type == enum.Email {
-		return email.Handle(ctx, job)
-	} else if job.Type == enum.Snail {
-		return snail.Handle(ctx, job)
+func delegate(ctx context.Context, jobInstance job.Instance) (int, error) {
+	if jobInstance.Type == enum.SMS {
+		return job.HandleSMS(ctx, jobInstance)
+	} else if jobInstance.Type == enum.Email {
+		return job.HandleEmail(ctx, jobInstance)
+	} else if jobInstance.Type == enum.Snail {
+		return job.HandleSnail(ctx, jobInstance)
 	} else {
-		return http.StatusBadRequest, fmt.Errorf("unknown job.Type [%+v]", job.Type)
+		return http.StatusBadRequest, fmt.Errorf("unknown job.Type [%+v]", jobInstance.Type)
 	}
 }

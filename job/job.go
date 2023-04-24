@@ -10,9 +10,6 @@ import (
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/enum"
 	"github.com/seantcanavan/notification-step-machine/job/audit"
-	"github.com/seantcanavan/notification-step-machine/service/email"
-	"github.com/seantcanavan/notification-step-machine/service/sms"
-	"github.com/seantcanavan/notification-step-machine/service/snail"
 	"github.com/seantcanavan/notification-step-machine/util"
 	"log"
 	"net/http"
@@ -21,11 +18,11 @@ import (
 
 type Instance struct {
 	Created   time.Time              `json:"created,omitempty" dynamodbav:"created,omitempty"`
-	Email     *email.Instance        `json:"email,omitempty" dynamodbav:"email,omitempty"`
+	Email     *Email                 `json:"email,omitempty" dynamodbav:"email,omitempty"`
 	From      string                 `json:"from,omitempty" dynamodbav:"from,omitempty"`
 	ID        string                 `json:"id,omitempty" dynamodbav:"id,omitempty"`
-	SMS       *sms.Instance          `json:"sms,omitempty" dynamodbav:"sms,omitempty"`
-	Snail     *snail.Instance        `json:"snail,omitempty" dynamodbav:"snail,omitempty"`
+	SMS       *SMS                   `json:"sms,omitempty" dynamodbav:"sms,omitempty"`
+	Snail     *Snail                 `json:"snail,omitempty" dynamodbav:"snail,omitempty"`
 	Status    enum.Status            `json:"status,omitempty" dynamodbav:"status,omitempty"`
 	Template  string                 `json:"template,omitempty" dynamodbav:"template,omitempty"`
 	To        string                 `json:"to,omitempty" dynamodbav:"to,omitempty"`
@@ -148,10 +145,10 @@ func Get(ctx context.Context, id string) (*Instance, int, error) {
 }
 
 type UpdateReq struct {
-	Email     *email.Instance        `json:"email,omitempty"`
+	Email     *Email                 `json:"email,omitempty"`
 	ID        string                 `json:"id,omitempty"`
-	SMS       *sms.Instance          `json:"sms,omitempty"`
-	Snail     *snail.Instance        `json:"snail,omitempty"`
+	SMS       *SMS                   `json:"sms,omitempty"`
+	Snail     *Snail                 `json:"snail,omitempty"`
 	Status    enum.Status            `json:"status,omitempty"`
 	Variables map[string]interface{} `json:"variables,omitempty"`
 }
@@ -237,14 +234,5 @@ func GenerateRandom() *CreateReq {
 		To:        util.GenerateRandomEmail(),
 		Type:      enum.Email,
 		Variables: GenerateRandomEmailVariables(),
-	}
-}
-
-func GenerateRandomEmailVariables() map[string]interface{} {
-	return map[string]interface{}{
-		"firstName": util.GenerateRandomString(10),
-		"footer":    util.GenerateRandomString(10),
-		"header":    util.GenerateRandomString(10),
-		"lastName":  util.GenerateRandomString(10),
 	}
 }
