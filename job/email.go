@@ -19,9 +19,11 @@ func HandleEmail(ctx context.Context, jobInstance *Instance) (int, error) {
 		Email:          jobInstance.Email,
 		ID:             jobInstance.ID,
 		PreviousStatus: jobInstance.Status,
-		SMS:            jobInstance.SMS,
-		Snail:          jobInstance.Snail,
 		Variables:      jobInstance.Variables,
+	}
+
+	if uReq.Email == nil {
+		uReq.Email = &Email{SesID: util.GenerateRandomString(10)}
 	}
 
 	if num < 3 { // stay in the same state and get 'nudged' later

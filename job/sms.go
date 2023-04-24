@@ -18,12 +18,14 @@ type SMS struct {
 func HandleSMS(ctx context.Context, jobInstance *Instance) (int, error) {
 	num := util.GenerateRandomNumber()
 	uReq := &UpdateReq{
-		Email:          jobInstance.Email,
 		ID:             jobInstance.ID,
 		PreviousStatus: jobInstance.Status,
 		SMS:            jobInstance.SMS,
-		Snail:          jobInstance.Snail,
 		Variables:      jobInstance.Variables,
+	}
+
+	if uReq.SMS == nil {
+		uReq.SMS = &SMS{SnsID: util.GenerateRandomString(10)}
 	}
 
 	if num < 3 { // stay in the same state and get 'nudged' later

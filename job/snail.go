@@ -28,12 +28,14 @@ type Snail struct {
 func HandleSnail(ctx context.Context, jobInstance *Instance) (int, error) {
 	num := util.GenerateRandomNumber()
 	uReq := &UpdateReq{
-		Email:          jobInstance.Email,
 		ID:             jobInstance.ID,
 		PreviousStatus: jobInstance.Status,
-		SMS:            jobInstance.SMS,
 		Snail:          jobInstance.Snail,
 		Variables:      jobInstance.Variables,
+	}
+
+	if uReq.Snail == nil {
+		uReq.Snail = &Snail{Address: GenerateRandomAddress()}
 	}
 
 	if num < 3 { // stay in the same state and get 'nudged' later
