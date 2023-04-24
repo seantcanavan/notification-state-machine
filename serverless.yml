@@ -93,6 +93,12 @@ functions:
           enabled: true
           filterPatterns:
             - eventName: [ INSERT, MODIFY ]
+              dynamodb:
+                NewImage:
+                  Type:
+                    S:
+                      - exists: True
+
   thaw:
     timeout: 180
     handler: bin/thaw
