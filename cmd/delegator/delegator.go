@@ -30,7 +30,7 @@ func main() {
 // changed type of event from: events.DynamoDBEvent to DynamoDBEvent (see below)
 func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 	randomID := util.GenerateRandomString(10)
-	fmt.Println(fmt.Sprintf("delegator.lambdaHandler invoked"))
+	fmt.Println(fmt.Sprintf("RandomID: [%s] delegator.lambdaHandler invoked", randomID))
 	esg := error_group.NewErrorStatusGroup()
 
 	var wg sync.WaitGroup
@@ -47,6 +47,9 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 			if unmarshalErr != nil {
 				esg.AddStatusAndError(http.StatusInternalServerError, unmarshalErr)
 			}
+
+			fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] jobInstance [%+v]", randomID, jobInstance.ID, jobInstance))
+
 			if jobInstance.Type == "" {
 				return
 			}
