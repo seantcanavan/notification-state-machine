@@ -96,7 +96,7 @@ functions:
               dynamodb:
                 NewImage:
                   type:
-                    exists: true
+                    S: [ Email, SMS, Snail ]
 
   thaw:
     timeout: 180
