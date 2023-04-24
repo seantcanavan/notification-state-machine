@@ -61,6 +61,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 }
 
 func delegate(ctx context.Context, jobInstance job.Instance) (int, error) {
+	fmt.Println(fmt.Sprintf("jobInstance.Type is [%+v]", jobInstance.Type))
 	if jobInstance.Type == enum.SMS {
 		return job.HandleSMS(ctx, jobInstance)
 	} else if jobInstance.Type == enum.Email {
@@ -68,6 +69,6 @@ func delegate(ctx context.Context, jobInstance job.Instance) (int, error) {
 	} else if jobInstance.Type == enum.Snail {
 		return job.HandleSnail(ctx, jobInstance)
 	} else {
-		return http.StatusBadRequest, fmt.Errorf("unknown job.Type [%+v]", jobInstance.Type)
+		return http.StatusBadRequest, fmt.Errorf("unknown jobInstance.Type [%+v]", jobInstance.Type)
 	}
 }
