@@ -96,8 +96,7 @@ functions:
               dynamodb:
                 NewImage:
                   type:
-                    S:
-                      - exists: true
+                    exists: true
 
   thaw:
     timeout: 180
