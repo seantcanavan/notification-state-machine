@@ -38,12 +38,20 @@ func validateUpdateReq(uReq *UpdateReq) (*UpdateReq, int, error) {
 		return nil, http.StatusBadRequest, fmt.Errorf("required field ID cannot be empty [%s]", uReq.ID)
 	}
 
-	if uReq.Status == "" {
-		return nil, http.StatusBadRequest, fmt.Errorf("required field Status cannot be empty [%+v]", uReq.Status)
+	if uReq.NextStatus == "" {
+		return nil, http.StatusBadRequest, fmt.Errorf("required field NextStatus cannot be empty [%+v]", uReq.NextStatus)
 	}
 
-	if !uReq.Status.Valid() {
-		return nil, http.StatusBadRequest, fmt.Errorf("required field Status cannot be empty [%+v]", uReq.Status)
+	if !uReq.NextStatus.Valid() {
+		return nil, http.StatusBadRequest, fmt.Errorf("required field NextStatus cannot be empty [%+v]", uReq.NextStatus)
+	}
+
+	if uReq.PreviousStatus == "" {
+		return nil, http.StatusBadRequest, fmt.Errorf("required field PreviousStatus cannot be empty [%+v]", uReq.PreviousStatus)
+	}
+
+	if !uReq.PreviousStatus.Valid() {
+		return nil, http.StatusBadRequest, fmt.Errorf("required field PreviousStatus cannot be empty [%+v]", uReq.PreviousStatus)
 	}
 
 	if uReq.Variables == nil {

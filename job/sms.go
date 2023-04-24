@@ -18,34 +18,34 @@ type SMS struct {
 func HandleSMS(ctx context.Context, jobInstance Instance) (int, error) {
 	num := util.GenerateRandomNumber()
 	uReq := &UpdateReq{
-		Email:     jobInstance.Email,
-		ID:        jobInstance.ID,
-		SMS:       jobInstance.SMS,
-		Snail:     jobInstance.Snail,
-		Status:    jobInstance.Status,
-		Variables: jobInstance.Variables,
+		Email:          jobInstance.Email,
+		ID:             jobInstance.ID,
+		PreviousStatus: jobInstance.Status,
+		SMS:            jobInstance.SMS,
+		Snail:          jobInstance.Snail,
+		Variables:      jobInstance.Variables,
 	}
 
 	if num < 3 { // stay in the same state and get 'nudged' later
 		return http.StatusOK, nil
 	} else if num < 4 { // move to the error state
-		uReq.Status = enum.Error
+		uReq.NextStatus = enum.Error
 		_, updateStatus, updateErr := Update(ctx, uReq)
 		return updateStatus, updateErr
 	}
 
 	if jobInstance.Status == enum.Created {
 		fmt.Println(fmt.Printf("jobInstance [%+v] is in Created state\n", jobInstance))
-		uReq.Status = enum.Queued
+		uReq.NextStatus = enum.Queued
 	} else if jobInstance.Status == enum.Error {
 		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Error state", jobInstance))
 		return http.StatusOK, nil
 	} else if jobInstance.Status == enum.Processing {
 		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Processing state", jobInstance))
-		uReq.Status = enum.Sent
+		uReq.NextStatus = enum.Sent
 	} else if jobInstance.Status == enum.Queued {
 		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Queued state", jobInstance))
-		uReq.Status = enum.Processing
+		uReq.NextStatus = enum.Processing
 	} else if jobInstance.Status == enum.Sent {
 		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Sent state", jobInstance))
 		return http.StatusOK, nil
