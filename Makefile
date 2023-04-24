@@ -5,12 +5,14 @@ SHELL := /bin/bash
 build: clean
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/api cmd/api/api.go
 	zip bin/api.zip bin/api
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/cleanup cmd/cleanup/cleanup.go
+	zip bin/cleanup.zip bin/cleanup
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/delegator cmd/delegator/delegator.go
+	zip bin/delegator.zip bin/delegator
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/sqs cmd/sqs/sqs.go
 	zip bin/sqs.zip bin/sqs
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/thaw cmd/thaw/thaw.go
 	zip bin/thaw.zip bin/thaw
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/delegator cmd/delegator/delegator.go
-	zip bin/delegator.zip bin/delegator
 
 clean:
 	rm -rfv ./bin
