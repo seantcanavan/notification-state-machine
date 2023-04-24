@@ -19,6 +19,8 @@ github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwA
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/seantcanavan/error_group v1.1.0 h1:RyS4MSfRCDK+dl0poaoBPXmCr3zo/CCNSTTgwQ2buro=
+github.com/seantcanavan/error_group v1.1.0/go.mod h1:wMsSM0lUiiVgw3vJTplXtIIV1+iVafbwz9pSarbR9AQ=
 github.com/seantcanavan/lambda_jwt_router v1.1.4 h1:KBEvFCu0M/BqokEWbjXjpuvNAimR776e7eZvzFdW/7w=
 github.com/seantcanavan/lambda_jwt_router v1.1.4/go.mod h1:f9YkheQqGEKOXT+X5/qfPW7txeHBu6SS7YVsw5cI2+I=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

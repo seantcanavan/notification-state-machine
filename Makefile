@@ -9,12 +9,8 @@ build: clean
 	zip bin/sqs.zip bin/sqs
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/thaw cmd/thaw/thaw.go
 	zip bin/thaw.zip bin/thaw
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/one cmd/1/one.go
-	zip bin/one.zip bin/one
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/two cmd/2/two.go
-	zip bin/two.zip bin/two
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/three cmd/3/three.go
-	zip bin/three.zip bin/three
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/delegator cmd/delegator/delegator.go
+	zip bin/delegator.zip bin/delegator
 
 clean:
 	rm -rfv ./bin

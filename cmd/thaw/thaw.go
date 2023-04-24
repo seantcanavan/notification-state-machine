@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/seantcanavan/notification-step-machine/database_job"
 	"github.com/seantcanavan/notification-step-machine/database_ttl"
 	"github.com/seantcanavan/notification-step-machine/job"
+	"github.com/seantcanavan/notification-step-machine/util"
 	"time"
 )
 
@@ -25,8 +24,7 @@ func main() {
 }
 
 // changed type of event from: events.DynamoDBEvent to DynamoDBEvent (see below)
-func lambdaHandler(ctx context.Context, event DynamoDBEvent) error {
-
+func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 	for _, record := range event.Records {
 		var beforeCReq job.CreateReq
 
@@ -46,57 +44,3 @@ func lambdaHandler(ctx context.Context, event DynamoDBEvent) error {
 
 	return nil
 }
-
-type DynamoDBEvent struct {
-	Records []DynamoDBEventRecord `json:"Records"`
-}
-
-type DynamoDBEventRecord struct {
-	AWSRegion      string                       `json:"awsRegion"`
-	Change         DynamoDBStreamRecord         `json:"dynamodb"`
-	EventID        string                       `json:"eventID"`
-	EventName      string                       `json:"eventName"`
-	EventSource    string                       `json:"eventSource"`
-	EventVersion   string                       `json:"eventVersion"`
-	EventSourceArn string                       `json:"eventSourceARN"`
-	UserIdentity   *events.DynamoDBUserIdentity `json:"userIdentity,omitempty"`
-}
-
-type DynamoDBStreamRecord struct {
-	ApproximateCreationDateTime events.SecondsEpochTime `json:"ApproximateCreationDateTime,omitempty"`
-	// changed to map[string]*dynamodb.AttributeValue
-	Keys map[string]*dynamodb.AttributeValue `json:"Keys,omitempty"`
-	// changed to map[string]*dynamodb.AttributeValue
-	NewImage map[string]*dynamodb.AttributeValue `json:"NewImage,omitempty"`
-	// changed to map[string]*dynamodb.AttributeValue
-	OldImage       map[string]*dynamodb.AttributeValue `json:"OldImage,omitempty"`
-	SequenceNumber string                              `json:"SequenceNumber"`
-	SizeBytes      int64                               `json:"SizeBytes"`
-	StreamViewType string                              `json:"StreamViewType"`
-}
-
-//func main() {
-//	lambda.Start(handler)
-//}
-//
-//func handler(_ context.Context, event events.DynamoDBEvent) error {
-//	for _, record := range event.Records {
-//		fmt.Println(fmt.Sprintf("record is [%+v]", record))
-//		var beforeCReq job.CreateReq
-//		var afterCReq job.CreateReq
-//		oldErr := dynamodbattribute.UnmarshalMap(record.Change.OldImage, &beforeCReq)
-//		if oldErr != nil {
-//			fmt.Println(fmt.Sprintf("oldErr [%+v]", oldErr))
-//		}
-//
-//		newErr := dynamodbattribute.UnmarshalMap(record.Change.NewImage, &afterCReq)
-//		if newErr != nil {
-//			fmt.Println(fmt.Sprintf("newErr [%+v]", newErr))
-//		}
-//
-//		fmt.Println(fmt.Sprintf("beforeCReq [%+v]", beforeCReq))
-//		fmt.Println(fmt.Sprintf("afterCReq [%+v]", afterCReq))
-//
-//	}
-//	return nil
-//}

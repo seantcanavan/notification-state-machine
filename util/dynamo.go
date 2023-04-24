@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go/private/protocol"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
@@ -36,4 +37,32 @@ func ParseQO(qo *dynamodb.QueryOutput, id string, out interface{}) (int, error) 
 	}
 
 	return http.StatusOK, nil
+}
+
+type DynamoDBEvent struct {
+	Records []DynamoDBEventRecord `json:"Records"`
+}
+
+type DynamoDBEventRecord struct {
+	AWSRegion      string                       `json:"awsRegion"`
+	Change         DynamoDBStreamRecord         `json:"dynamodb"`
+	EventID        string                       `json:"eventID"`
+	EventName      string                       `json:"eventName"`
+	EventSource    string                       `json:"eventSource"`
+	EventVersion   string                       `json:"eventVersion"`
+	EventSourceArn string                       `json:"eventSourceARN"`
+	UserIdentity   *events.DynamoDBUserIdentity `json:"userIdentity,omitempty"`
+}
+
+type DynamoDBStreamRecord struct {
+	ApproximateCreationDateTime events.SecondsEpochTime `json:"ApproximateCreationDateTime,omitempty"`
+	// changed to map[string]*dynamodb.AttributeValue
+	Keys map[string]*dynamodb.AttributeValue `json:"Keys,omitempty"`
+	// changed to map[string]*dynamodb.AttributeValue
+	NewImage map[string]*dynamodb.AttributeValue `json:"NewImage,omitempty"`
+	// changed to map[string]*dynamodb.AttributeValue
+	OldImage       map[string]*dynamodb.AttributeValue `json:"OldImage,omitempty"`
+	SequenceNumber string                              `json:"SequenceNumber"`
+	SizeBytes      int64                               `json:"SizeBytes"`
+	StreamViewType string                              `json:"StreamViewType"`
 }
