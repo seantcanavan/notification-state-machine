@@ -54,7 +54,10 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	wg.Wait()
 
-	return nil
+	fmt.Println(fmt.Sprintf("delegator hightest status [%d]", esg.HighestStatus()))
+	fmt.Println(fmt.Sprintf("delegator error [%+v]", esg.ToError()))
+
+	return esg.ToError()
 }
 
 func delegate(ctx context.Context, jobInstance job.Instance) (int, error) {

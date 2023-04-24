@@ -42,3 +42,20 @@ func GetLambda(ctx context.Context, lambdaReq events.APIGatewayProxyRequest) (ev
 
 	return lambda_router.SuccessRes(job)
 }
+
+func UpdateLambda(ctx context.Context, lambdaReq events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var uReq UpdateReq
+	err := lambda_router.UnmarshalReq(lambdaReq, true, &uReq)
+	if err != nil {
+		return lambda_router.StatusAndErrorRes(http.StatusInternalServerError, err)
+	}
+
+	uReq.ID = lambdaReq.PathParameters["id"]
+
+	job, httpStatus, err := Update(ctx, &uReq)
+	if err != nil {
+		return lambda_router.StatusAndErrorRes(httpStatus, err)
+	}
+
+	return lambda_router.SuccessRes(job)
+}
