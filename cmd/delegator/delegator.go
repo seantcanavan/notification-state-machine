@@ -31,6 +31,7 @@ func main() {
 func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 	randomID := util.GenerateRandomString(10)
 	fmt.Println(fmt.Sprintf("RandomID: [%s] delegator.lambdaHandler invoked", randomID))
+	fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] Records: [%+v]", randomID, "", event.Records))
 	esg := error_group.NewErrorStatusGroup()
 
 	var wg sync.WaitGroup
@@ -38,6 +39,7 @@ func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
 
 	for _, currentRecord := range event.Records {
 		go func(record util.DynamoDBEventRecord) {
+			fmt.Println(fmt.Sprintf("RandomID: [%s] ID: [%s] record: [%+v]", randomID, "", record))
 			defer wg.Done()
 			change := record.Change
 			newImage := change.NewImage
