@@ -92,7 +92,7 @@ functions:
           batchSize: 10
           enabled: true
           filterPatterns:
-            - eventName: [ UPDATE ]
+            - eventName: [ CREATE, UPDATE ]
   thaw:
     timeout: 180
     handler: bin/thaw
