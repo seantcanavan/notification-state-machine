@@ -25,6 +25,7 @@ func main() {
 
 // changed type of event from: events.DynamoDBEvent to DynamoDBEvent (see below)
 func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
+	fmt.Println(fmt.Sprintf("thaw.lambdaHandler invoked"))
 	for _, record := range event.Records {
 		var beforeCReq job.CreateReq
 

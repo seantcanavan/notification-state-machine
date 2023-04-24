@@ -13,6 +13,7 @@ func TestStatusStringValues(t *testing.T) {
 	}{
 		{name: "Created", status: "Created", valid: true},
 		{name: "Error", status: "Error", valid: true},
+		{name: "NA", status: " NA", valid: true},
 		{name: "Processing", status: "Processing", valid: true},
 		{name: "Queued", status: "Queued", valid: true},
 		{name: "Sent", status: "Sent", valid: true},
@@ -38,5 +39,5 @@ func TestStatusStringValues(t *testing.T) {
 // between the map that reverses the values and the values which
 // are also checked against the map for validity.
 func TestStatusMapHasNoNewValues(t *testing.T) {
-	assert.Equal(t, len(statusToString), 5)
+	assert.Equal(t, len(statusToString), 6)
 }

@@ -20,10 +20,11 @@ func init() {
 }
 
 func main() {
-	lambda.Start(handler)
+	lambda.Start(lambdaHandler)
 }
 
-func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
+func lambdaHandler(ctx context.Context, sqsEvent events.SQSEvent) error {
+	fmt.Println(fmt.Sprintf("sqs.lambdaHandler invoked"))
 	for _, record := range sqsEvent.Records {
 		var cReq job.CreateReq
 		err := json.Unmarshal([]byte(record.Body), &cReq)

@@ -20,14 +20,15 @@ func init() {
 }
 
 func main() {
-	lambda.Start(Handler)
+	lambda.Start(lambdaHandler)
 }
 
 type ServerlessInput struct {
 	Type enum.Type `json:"type"`
 }
 
-func Handler(ctx context.Context, input ServerlessInput) (int, error) {
+func lambdaHandler(ctx context.Context, input ServerlessInput) (int, error) {
+	fmt.Println(fmt.Sprintf("cleanup.lambdaHandler invoked"))
 	if input.Type == "" {
 		return http.StatusBadRequest, fmt.Errorf("empty Type [%+v]", input.Type)
 	} else if input.Type == enum.Email {

@@ -29,6 +29,7 @@ func main() {
 
 // changed type of event from: events.DynamoDBEvent to DynamoDBEvent (see below)
 func lambdaHandler(ctx context.Context, event util.DynamoDBEvent) error {
+	fmt.Println(fmt.Sprintf("delegator.lambdaHandler invoked"))
 	esg := error_group.NewErrorStatusGroup()
 
 	var wg sync.WaitGroup

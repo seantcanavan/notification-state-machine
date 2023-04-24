@@ -81,9 +81,9 @@ func Create(ctx context.Context, cReq *CreateReq) (*Instance, int, error) {
 
 	audit.CreateSilent(ctx, &audit.CreateReq{
 		JobID:          job.ID,
-		NextStatus:     enum.Queued,
+		NextStatus:     enum.Created,
 		Operation:      enum.Create,
-		PreviousStatus: enum.Created,
+		PreviousStatus: enum.NA,
 	})
 
 	return job, http.StatusOK, nil

@@ -5,6 +5,7 @@ type Status string
 const (
 	Created    = "Created"
 	Error      = "Error"
+	NA         = "NA"
 	Processing = "Processing"
 	Queued     = "Queued"
 	Sent       = "Sent"
@@ -13,6 +14,7 @@ const (
 var statusToString = map[Status]string{
 	"Created":    Created,
 	"Error":      Error,
+	"NA":         NA,
 	"Processing": Processing,
 	"Queued":     Queued,
 	"Sent":       Sent,
