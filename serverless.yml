@@ -95,7 +95,7 @@ functions:
             - eventName: [ INSERT, MODIFY ]
               dynamodb:
                 NewImage:
-                  Type:
+                  type:
                     S:
                       - exists: True
 
