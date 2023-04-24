@@ -155,6 +155,7 @@ type UpdateReq struct {
 }
 
 func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
+	fmt.Println(fmt.Sprintf("Update job.go"))
 	uReq, httpStatus, err := validateUpdateReq(uReq)
 	if err != nil {
 		return nil, httpStatus, err
@@ -166,6 +167,7 @@ func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
 	}
 
 	input := &dynamodb.UpdateItemInput{
+		ExpressionAttributeNames: map[string]*string{"#S": aws.String("status")},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":status": {
 				S: aws.String(uReq.NextStatus.String()),
@@ -181,7 +183,7 @@ func Update(ctx context.Context, uReq *UpdateReq) (*Instance, int, error) {
 			},
 		},
 		ReturnValues:     aws.String("ALL_NEW"),
-		UpdateExpression: aws.String("SET status = :status, variables = :variables"),
+		UpdateExpression: aws.String("SET #S = :status, variables = :variables"),
 	}
 
 	if uReq.Email != nil {
