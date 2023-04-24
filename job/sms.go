@@ -12,7 +12,7 @@ import (
 var OldThreshold = time.Now().AddDate(0, 0, -1)
 
 type SMS struct {
-	SnsID string
+	SnsID string `json:"snsId,omitempty" dynamodbav:"snsId,omitempty"`
 }
 
 func HandleSMS(ctx context.Context, jobInstance Instance) (int, error) {

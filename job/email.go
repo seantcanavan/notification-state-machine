@@ -10,7 +10,7 @@ import (
 )
 
 type Email struct {
-	SesID string
+	SesID string `json:"sesId,omitempty" dynamodbav:"sesId,omitempty"`
 }
 
 func HandleEmail(ctx context.Context, jobInstance Instance) (int, error) {

@@ -10,19 +10,19 @@ import (
 )
 
 type Address struct {
-	City            string  // US city
-	Formatted       string  // Google Maps JavaScript API formatted string
-	Latitude        float32 // Google Maps JavaScript API Latitude value
-	Longitude       float32 // Google Maps JavaScript API Longitude value
-	NumberAndStreet string  // The physical number of the address and the street
-	Plus            int     // The 4 digit 'Plus' code after the zip. E.G. {zip}-{plus}
-	State           string  // The two digit state code
-	Unit            string  // optional apartment, unit, suite, etc
-	Zip             int     // The 5 digit Zip code
+	City            string  `json:"city,omitempty" dynamodbav:"city,omitempty"`             // US city
+	Formatted       string  `json:"formatted,omitempty" dynamodbav:"formatted,omitempty"`   // Google Maps JavaScript API formatted string
+	Latitude        float32 `json:"latitude,omitempty" dynamodbav:"latitude,omitempty"`     // Google Maps JavaScript API Latitude value
+	Longitude       float32 `json:"longitude,omitempty" dynamodbav:"longitude,omitempty"`   // Google Maps JavaScript API Longitude value
+	NumberAndStreet string  `json:"numberAndStreet,omitempty" dynamodbav:"numberAndStreet"` // The physical number of the address and the street
+	Plus            int     `json:"plus,omitempty" dynamodbav:"plus,omitempty"`             // The 4 digit 'Plus' code after the zip. E.G. {zip}-{plus}
+	State           string  `json:"state,omitempty" dynamodbav:"state,omitempty"`           // The two digit state code
+	Unit            string  `json:"unit,omitempty" dynamodbav:"unit,omitempty"`             // optional apartment, unit, suite, etc
+	Zip             int     `json:"zip,omitempty" dynamodbav:"zip,omitempty"`               // The 5 digit Zip code
 }
 
 type Snail struct {
-	Address Address
+	Address Address `json:"address,omitempty" dynamodbav:"address,omitempty"`
 }
 
 func HandleSnail(ctx context.Context, jobInstance Instance) (int, error) {
