@@ -39,6 +39,19 @@ func ParseQO(qo *dynamodb.QueryOutput, id string, out interface{}) (int, error) 
 	return http.StatusOK, nil
 }
 
+func ParseUIO(uio *dynamodb.UpdateItemOutput, id string, out interface{}) (int, error) {
+	if uio.Attributes == nil {
+		return http.StatusNotFound, fmt.Errorf("could not update item(s) with ID [%s]", id)
+	}
+
+	err := dynamodbattribute.UnmarshalMap(uio.Attributes, out)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("could not unmarshal item [%+v] into out [%+v]", uio.Attributes, out)
+	}
+
+	return http.StatusOK, nil
+}
+
 type DynamoDBEvent struct {
 	Records []DynamoDBEventRecord `json:"Records"`
 }

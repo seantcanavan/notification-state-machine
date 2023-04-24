@@ -26,20 +26,48 @@ type Instance struct {
 	Address Address
 }
 
-func Handle(ctx context.Context, job job.Instance) (int, error) {
-	if job.Status == enum.Created {
-		fmt.Println(fmt.Printf("job [%+v] has reached Created state\n", job))
-	} else if job.Status == enum.Error {
-		fmt.Println(fmt.Sprintf("job [%+v] has reached Error state", job))
-	} else if job.Status == enum.Processing {
-		fmt.Println(fmt.Sprintf("job [%+v] has reached Processing state", job))
-	} else if job.Status == enum.Queued {
-		fmt.Println(fmt.Sprintf("job [%+v] has reached Queued state", job))
-	} else if job.Status == enum.Sent {
-		fmt.Println(fmt.Sprintf("job [%+v] has reached Sent state", job))
+func Handle(ctx context.Context, jobInstance job.Instance) (int, error) {
+	num := util.GenerateRandomNumber()
+	uReq := &job.UpdateReq{
+		Email:     jobInstance.Email,
+		ID:        jobInstance.ID,
+		SMS:       jobInstance.SMS,
+		Snail:     jobInstance.Snail,
+		Status:    jobInstance.Status,
+		Variables: jobInstance.Variables,
 	}
 
-	return http.StatusInternalServerError, fmt.Errorf("unknown job.Stats [%+v]", job.Status)
+	if num < 3 { // stay in the same state and get 'nudged' later
+		return http.StatusOK, nil
+	} else if num < 4 { // move to the error state
+		uReq.Status = enum.Error
+		_, updateStatus, updateErr := job.Update(ctx, uReq)
+		return updateStatus, updateErr
+	}
+
+	if jobInstance.Status == enum.Created {
+		fmt.Println(fmt.Printf("jobInstance [%+v] is in Created state\n", jobInstance))
+		uReq.Status = enum.Queued
+	} else if jobInstance.Status == enum.Error {
+		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Error state", jobInstance))
+		return http.StatusOK, nil
+	} else if jobInstance.Status == enum.Processing {
+		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Processing state", jobInstance))
+		uReq.Status = enum.Sent
+	} else if jobInstance.Status == enum.Queued {
+		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Queued state", jobInstance))
+		uReq.Status = enum.Processing
+	} else if jobInstance.Status == enum.Sent {
+		fmt.Println(fmt.Sprintf("jobInstance [%+v] is in Sent state", jobInstance))
+		return http.StatusOK, nil
+	}
+
+	_, updateStatus, updateErr := job.Update(ctx, uReq)
+	return updateStatus, updateErr
+}
+
+func Nudge(ctx context.Context) (int, error) {
+	return 0, nil
 }
 
 func GenerateRandomAddress() Address {

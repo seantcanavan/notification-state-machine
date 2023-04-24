@@ -59,7 +59,7 @@ functions:
           path: /{proxy+}
           cors: true
   thaw:
-    timeout: 30
+    timeout: 180
     handler: bin/thaw
     package:
       artifact: bin/thaw.zip
@@ -72,6 +72,27 @@ functions:
           enabled: true
           filterPatterns:
             - eventName: [ REMOVE ]
+  cleanup:
+    timeout: 180
+    handler: bin/cleanup
+    package:
+      artifact: bin/cleanup.zip
+    events:
+      - schedule:
+          rate: cron(15 8 * * ? *) # https://crontab.guru/#15_8_*_*_* -- Every day at 8:15AM UTC or 3:15AM CT
+          input:
+            type: 'SMS'
+          enabled: true
+      - schedule:
+          rate: cron(15 8 * * ? *) # https://crontab.guru/#15_8_*_*_* -- Every day at 8:15AM UTC or 3:15AM CT
+          input:
+            type: 'Email'
+          enabled: true
+      - schedule:
+          rate: cron(15 8 * * ? *) # https://crontab.guru/#15_8_*_*_* -- Every day at 8:15AM UTC or 3:15AM CT
+          input:
+            type: 'Snail'
+          enabled: true
 
 resources: # CloudFormation template syntax from here on.
   Resources:
