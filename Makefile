@@ -1,6 +1,8 @@
 SHELL := /bin/bash
 
-.PHONY: build deps format run test
+.PHONY: all build deps format run test
+
+all: clean format test build
 
 build: clean
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/api cmd/api/api.go
