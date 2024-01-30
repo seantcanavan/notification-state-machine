@@ -27,11 +27,19 @@ deploy-staging: pre-deploy
 deploy-production: pre-deploy
 	serverless deploy --verbose  --stage production --region us-east-2 --org f72e1c13062e4f45ad951530acf9e5a7
 
+remove-production:
+	serverless remove --verboes --stage production --region us-east-2 --org f72e1c13062e4f45ad951530acf9e5a7
+
+remove-staging:
+	serverless remove --verbose --stage staging --region us-east-2 --org f72e1c13062e4f45ad951530acf9e5a7
+
 deps:
 	cp -p .env.example .env
 	go install github.com/seantcanavan/fresh/v2@latest
 	npm install -g serverless
 	serverless plugin install -n serverless-lift
+	serverless plugin install -n serverless-step-functions
+
 
 format:
 	go fmt ./...
